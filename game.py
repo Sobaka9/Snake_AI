@@ -8,11 +8,12 @@ class Game:
     def __init__(self, root, board_size: int = 4, framerate: int = 20):
         self.board_size: int = board_size
         mid_pos: tuple[int, int] = (board_size/2, board_size/2)
+        self.framerate = framerate
+        self.pause = True
         self.snake: Snake = Snake(mid_pos, board_size)
         self.apple: Cell = self._spawn_apple()
         self.root = root
         self.gui: GUI = GUI(root, self)
-        self.framerate = framerate
 
         self._game_loop()
         self.root.mainloop()
@@ -20,13 +21,15 @@ class Game:
     def handle_key_press(self, direction: Direction):
         """
         """
+        if self.pause : return
         self.snake.current_dir = direction
 
     def _game_loop(self):
         # Calls itself FRAME_RATE times per second
         self.root.after(1000 // self.framerate, self._game_loop)
 
-        self._update(self.snake.current_dir)
+        if not self.pause:
+            self._update(self.snake.current_dir)
         self.gui.draw_board()
 
     def _update(self, direction: Direction):
@@ -60,4 +63,12 @@ class Game:
         random_cell: tuple = random.choice(available_cells)
 
         return Cell(random_cell[0], random_cell[1], 1)
-    
+
+    def update_framerate(self, new_framerate):
+        self.framerate = int(new_framerate)
+
+    def reset(self, new_size=None):
+        if new_size is not None and new_size > 0:
+            self.board_size = new_size
+        self.snake = Snake((new_size // 2, new_size // 2), new_size)
+        self.apple = self._spawn_apple()
