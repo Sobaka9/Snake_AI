@@ -31,31 +31,12 @@ class Snake:
         self.cells.append(head)
         self.length = 1
 
-    def handle_key_press(self, direction: Direction):
-        """Tells the game logic to move the player in a given direction."""
-        self.snake.current_dir = direction
-
     def move(self, direction: Direction, apple_position: tuple[int, int]) -> bool:
         has_eaten_apple: bool = False
         dx: int = 0
         dy: int = 0
 
-        match direction:
-            case Direction.LEFT:
-                dx = -1
-                dy = 0
-            case Direction.RIGHT:
-                dx = 1
-                dy = 0
-            case Direction.DOWN:
-                dx = 0
-                dy = 1
-            case Direction.UP:
-                dx = 0
-                dy = -1
-            case _:
-                print("Unknown Direction")
-                exit(1)
+        dx, dy = direction.value
 
         # The head's new position
         new_pos_x: int = self.head.pos_x + dx
