@@ -1,5 +1,5 @@
 from enum import Enum
-from Game import Game
+from games.game import Game
 
 import random
 import numpy as np
@@ -14,6 +14,9 @@ class Cell:
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 
 class SnakeGame(Game):
     """
@@ -77,13 +80,13 @@ class SnakeGame(Game):
         head: Cell = self.head
 
         # Update direction based on action
-        if action == Direction.RIGHT and self.direction != Direction.LEFT:
+        if action == Direction.RIGHT.value and self.direction != Direction.LEFT.value:
             self.direction = Direction.RIGHT
-        elif action == Direction.DOWN and self.direction != Direction.UP:
+        elif action == Direction.DOWN.value and self.direction != Direction.UP.value:
             self.direction = Direction.DOWN
-        elif action == Direction.LEFT and self.direction != Direction.RIGHT:
+        elif action == Direction.LEFT.value and self.direction != Direction.RIGHT.value:
             self.direction = Direction.LEFT
-        elif action == Direction.UP and self.direction != Direction.DOWN:
+        elif action == Direction.UP.value and self.direction != Direction.DOWN.value:
             self.direction = Direction.UP
 
         # Move the snake
@@ -103,7 +106,7 @@ class SnakeGame(Game):
         if self._is_collision(new_head):
             reward = -10
             done = True
-            return self._get_state(), reward, done, self.score  # Game over
+            return self._get_state(), reward, done, {"score": self.score} # Game over
 
         # Move snake
         self.snake.insert(0, new_head)
@@ -121,13 +124,13 @@ class SnakeGame(Game):
         if self._distance(head, self.food) > self._distance(self.head, self.food):
             reward += 0.1  # Encourage moving towards food
 
-        return self._get_state(), reward, done, self.score
+        return self._get_state(), reward, done, {"score": self.score}
 
     def get_render_data(self):
         """Return data necessary for rendering the game."""
         return {
-            'snake': [(cell.x, cell.y) for cell in self.snake],
-            'food': (self.food.x, self.food.y),
+            'snake': [cell for cell in self.snake],
+            'food': self.food,
             'score': self.score,
             'direction': self.direction,
             'width': self.width,

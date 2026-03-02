@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 
 class Game(ABC):
-
+    def __init__(self, width: int = 10, height: int = 10):
+        self.width = width
+        self.height = height
+        
     @abstractmethod
     def reset(self):
         """Reset the game to its initial state."""
